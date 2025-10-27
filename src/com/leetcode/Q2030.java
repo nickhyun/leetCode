@@ -42,97 +42,129 @@ letter는 소문자 영어 문자이며, s에 최소 repetition 번 이상 나�
 
 */
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Q2030 extends QBase {
 
 
     public static void main(String[] args) {
         Q2030 q2030 = new Q2030();
-//        log(q2030.smallestSubsequence("leet", 3, 'e', 1)); // eet
-//        log(q2030.smallestSubsequence("leetcode", 4, 'e', 2)); // ecde
-//        log(q2030.smallestSubsequence("bb", 2, 'b', 2)); // bb
+        log(q2030.smallestSubsequence("leet", 3, 'e', 1)); // eet
+        log(q2030.smallestSubsequence("leetcode", 4, 'e', 2)); // ecde
+        log(q2030.smallestSubsequence("bb", 2, 'b', 2)); // bb
         log(q2030.smallestSubsequence("d", 1, 'd', 1)); // d
+        log(q2030.smallestSubsequence("aaabbbcccddd", 3, 'b', 2)); // d
 
     }
 
     public String smallestSubsequence(String s, int k, char letter, int repetition) {
+        String ans = "";
+        List<Character> stack = new ArrayList<>();
+        int required = repetition;
+        int nLetters = (int) s.chars().filter(c -> c == letter).count();
 
-        StringBuilder smallString = new StringBuilder();
-        for (int i = 0; i < k; i++) {
-            smallString.append("A");
-        }
-
-        char[] chars = s.toCharArray();
-        char[] finChars = new char[k];
-        for(int i = 0; i < finChars.length; i++) {
-            finChars[i] = chars[i]; // 기본값
-        }
-
-        int num = 0;
-        while(lenBin(num) <= s.length() ){
-            if(countOne(num) == k){
-                log("num " + Integer.toBinaryString(num) + " / " + num);
-                String numChar = Integer.toBinaryString(num);
-
-                char[] tmpChar = new char[k];
-                int pos = 0;
-                for(int i = 0; i < numChar.length() ; i++){
-                    if(numChar.charAt(numChar.length()-i-1) == '1'){
-                        tmpChar[k-1-pos] = s.charAt(s.length()-i-1);
-//                        log(s.charAt(s.length()-i-1));
-                        pos++;
-                    }
+        for (int i = 0; i < s.length(); ++i) {
+            char c = s.charAt(i);
+            while (!stack.isEmpty() && stack.get(stack.size() - 1) > c && stack.size() + s.length() - i - 1 >= k && (stack.get(stack.size() - 1) != letter || nLetters > required)) {
+                char popped = stack.remove(stack.size() - 1);
+                if (popped == letter)
+                    ++required;
+            }
+            if (stack.size() < k)
+                if (c == letter) {
+                    stack.add(c);
+                    --required;
+                } else if (k > stack.size() + required) {
+                    stack.add(c);
                 }
-
-
-                if(rightCond(tmpChar, letter, repetition)){
-                    log("tmpChar " + new String(tmpChar));
-                    finChars = minChars(finChars, tmpChar);
-                    log("finChar " + new String(finChars));
-                    log("");
-                }
-            }
-            num++;
-
+            if (c == letter)
+                --nLetters;
         }
 
-        return new String(finChars);
+        for (char c : stack)
+            ans += c;
 
+        return ans;
     }
 
-    private boolean rightCond(char[] tmpChar, char letter, int repetition){
-        int cnt = 0;
-        for(int i = 0; i < tmpChar.length; i++){
-            if(tmpChar[i] == letter){
-                cnt++;
-            }
-        }
-        return cnt >= repetition;
-    }
 
-    private char[] minChars(char[] left, char[] right){
-        for(int i = 0; i < left.length; i++){
-            if(left[i] > right[i]){
-                return right;
-            } else if(left[i] < right[i]){
-                return left;
-            }
-        }
-        return left;
-    }
-
-    // 2진수에서 1의 갯수
-    private int countOne(int num) {
-        int cnt = 0;
-        while (num > 0) {
-            cnt += num % 2;
-            num /= 2;
-        }
-        return cnt;
-    }
-
-    // 2진수의 길이
-    private int lenBin(int num){
-        return Integer.toBinaryString(num).length();
-    }
+//
+//    // failed my solution
+//    public String smallestSubsequence(String s, int k, char letter, int repetition) {
+//
+////        char[] chars = s.toCharArray();
+//        char[] finChars = new char[k];
+//        for(int i = 0; i < finChars.length; i++) {
+//            finChars[i] = 'z'; // 기본값
+//        }
+//
+//        int num = 0;
+//        while(lenBin(num) <= s.length() ){
+//            if(countOne(num) == k){
+////                log("num " + Integer.toBinaryString(num) + " / " + num);
+//                String numChar = Integer.toBinaryString(num);
+//
+//                char[] tmpChar = new char[k];
+//                int pos = 0;
+//                for(int i = 0; i < numChar.length() ; i++){
+//                    if(numChar.charAt(numChar.length()-i-1) == '1'){
+//                        tmpChar[k-1-pos] = s.charAt(s.length()-i-1);
+////                        log(s.charAt(s.length()-i-1));
+//                        pos++;
+//                    }
+//                }
+//
+//
+//                if(rightCond(tmpChar, letter, repetition)){
+////                    log("tmpChar " + new String(tmpChar));
+//                    finChars = minChars(finChars, tmpChar);
+////                    log("finChar " + new String(finChars));
+////                    log("");
+//                }
+//            }
+//            num++;
+//
+//        }
+//
+//        return new String(finChars);
+//
+//    }
+//
+//    private boolean rightCond(char[] tmpChar, char letter, int repetition){
+//        int cnt = 0;
+//        for(int i = 0; i < tmpChar.length; i++){
+//            if(tmpChar[i] == letter){
+//                cnt++;
+//            }
+//        }
+//        return cnt >= repetition;
+//    }
+//
+//    private char[] minChars(char[] left, char[] right){
+//        for(int i = 0; i < left.length; i++){
+//            if(left[i] > right[i]){
+//                return right;
+//            } else if(left[i] < right[i]){
+//                return left;
+//            }
+//        }
+//        return left;
+//    }
+//
+//    // 2진수에서 1의 갯수
+//    private int countOne(int num) {
+//        int cnt = 0;
+//        while (num > 0) {
+//            cnt += num % 2;
+//            num /= 2;
+//        }
+//        return cnt;
+//    }
+//
+//    // 2진수의 길이
+//    private int lenBin(int num){
+//        return Integer.toBinaryString(num).length();
+//    }
 
 }
